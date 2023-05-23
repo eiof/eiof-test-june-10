@@ -1,4 +1,4 @@
-name: test-workflow-order
+name: main
 
 on:
   workflow_dispatch:
