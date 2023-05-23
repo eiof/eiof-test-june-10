@@ -1,0 +1,19 @@
+name: test-workflow-order
+
+on:
+  workflow_dispatch:
+
+  push:
+    branches:
+      - master
+
+  pull_request:
+    types: [opened, reopened, synchronize]
+
+jobs:
+  test-job:
+    runs-on: ubuntu-latest
+    steps:
+      - name: say hi
+        run: |
+          echo "hello world"

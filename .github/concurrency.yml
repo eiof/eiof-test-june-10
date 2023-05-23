@@ -1,0 +1,30 @@
+name: concurrency
+
+on:
+  workflow_run:
+    workflows: 
+      - main
+    types: 
+      - completed
+
+concurrency:
+  group: ${{ github.workflow }}
+  cancel-in-progress: ${{ github.event.workflow_run.conclusion != 'success' }}
+
+jobs:
+  test-job:
+    if: ${{ github.event.workflow_run.conclusion != 'success' }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: test job
+        run: |
+          echo "hello world"
+          sleep 300
+  
+  do-nothing:
+    if: ${{ github.event.workflow_run.conclusion != 'success' }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: do nothing
+        run: |
+          echo "do nothing"
