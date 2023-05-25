@@ -61,7 +61,7 @@ const pollWorkflows = async (github, context, input) => {
     const runs = await getRuns(github, context, input);
 
     const newerRuns = runs
-      .filter((run) => run.name === workflowName && run.id > context.id);
+      .filter((run) => run.name === workflowName && run.id > context.runId);
 
     if (newerRuns.length) {
       const { owner, repo } = context.repo;
