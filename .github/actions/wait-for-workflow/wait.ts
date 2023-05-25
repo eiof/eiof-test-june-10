@@ -61,7 +61,7 @@ const cancelSelf = async (github, context) => {
   throw new Error("Unexpectedly failed to cancel this workflow.");
 }
 
-const wait = async (github, context, input) => {
+const pollRuns = async (github, context, input) => {
   console.log('Checking for other workflows...');
 
   const workflowName = context.workflow;
@@ -92,5 +92,20 @@ const wait = async (github, context, input) => {
     await delay(input.delay * 1000);
   }
 };
+
+const wait = async (core, github, context) => {
+  const branch =  core.getInput('branch');
+  const delay =  Number(core.getInput('delay'));
+  const rawCancelOnNewerWorkflow = core.getInput('cancelOnNewerWorkflow');
+  const cancelOnNewerWorkflow = rawCancelOnNewerWorkflow === true || rawCancelOnNewerWorkflow === 'true';
+  
+  const input = {
+    branch,
+    delay,
+    cancelOnNewerWorkflow,
+  };
+
+  return await pollRuns(github, context, input);
+}
 
 module.exports = wait;

@@ -21,14 +21,9 @@ jobs:
         run: |
           echo "hello world"
     
-      - name: Test wait for deploys
-        uses: actions/github-script@v6
+      - name: wait for older workflows to conclude
+        uses: .github/actions/wait-for-workflow
         with:
-          script: |
-            const input = {
-              branch: 'main',
-              delay: 2,
-              cancelOnNewerWorkflow: true,
-            }
-            const wait = require('${{ github.action_path }}/wait.ts');
-            await wait(github, context, input);
+          branch: main
+          delay: 15
+          cancel-on-newer-workflow: true

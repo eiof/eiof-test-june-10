@@ -1,0 +1,25 @@
+name: Wait for workflow
+description: |
+  Wait for older (in-flight and queued) workflows with the same id to conclude.
+inputs:
+  branch:
+    description: 'Target branch for older workflow runs'
+    required: true
+  delay:
+    description: 'Delay in seconds between checking for older or newer workflows'
+    required: false
+    default: '30'
+  cancel-on-newer-workflow:
+    description: 'Cancel this workflow run if a newer workflow run is queued or in-flight'
+    required: false
+    default: 'false'
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Wait for workflow script
+      uses: actions/github-script@v6
+      with:
+        script: |
+          const wait = require('${{ github.action_path }}/.github/actions/wait-for-workflow/wait.ts');
+          await wait(core, github, context);
