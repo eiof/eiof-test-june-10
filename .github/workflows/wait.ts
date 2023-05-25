@@ -55,7 +55,7 @@ const getRuns = async (github, context, input) => {
 };
 
 const wait = async (github, context, input) => {
-  console.log('Checking for running builds...');
+  console.log('Checking for other workflows...');
 
   const workflowName = context.workflow;
 
@@ -66,7 +66,7 @@ const wait = async (github, context, input) => {
       .filter((run) => run.name === workflowName && run.id > context.runId);
 
     if (newerRuns.length) {
-      console.log('Canceling workflow run, newer build has started.');
+      console.log('Canceling this workflow, a newer workflow has started.');
 
       const { owner, repo } = context.repo;
       const cancelOptions = {
@@ -86,7 +86,7 @@ const wait = async (github, context, input) => {
       .sort((a, b) => b.id - a.id);
 
     if (!previousRuns.length) {
-      console.log('No other builds in progress. Continuing...');
+      console.log('No other workflows in progress. Continuing...');
       break;
     }
 

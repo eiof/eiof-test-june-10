@@ -25,6 +25,7 @@ jobs:
         uses: actions/github-script@v6
         with:
           script: |
+            console.log(context)
             const input = {
               branch: 'main',
               delay: 2,
@@ -32,6 +33,18 @@ jobs:
             }
             const wait = require('./.github/workflows/wait.ts');
             await wait(github, context, input);
+
+      - name: cancel via cli
+        run: |
+          RUN_IDS=($(gh api \
+            -H "Accept: application/vnd.github+json" \
+            -H "X-GitHub-Api-Version: 2022-11-28" \
+            /repos/${{ github.repository }}/actions/workflows/main.yml/runs \
+            | jq -r '.workflow_runs[] | select(.status == "in_progress" or .status == "pending").id'))
+          for id in "${RUN_IDS[@]}"; do
+            echo "Canceling release worflow run $id"
+            gh run cancel $id --repo ${{ github.repository }}
+          done
 
       - name: stall
         run: |
