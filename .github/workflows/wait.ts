@@ -70,7 +70,7 @@ const pollWorkflows = async (github, context, input) => {
       const cancelOptions = {
         owner,
         repo,
-        run_id: context.id,
+        run_id: context.runId,
       };
 
       await github.request(
@@ -78,9 +78,9 @@ const pollWorkflows = async (github, context, input) => {
         cancelOptions,
       )
 
-      // Wait up to 10 sec for cancel
+      // Wait up to 5 min for cancel
       // then fall through the loop and potentially try again
-      await delay(10 * 1000);
+      await delay(300 * 1000);
       continue;
     }
 
