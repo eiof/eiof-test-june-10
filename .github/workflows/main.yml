@@ -25,14 +25,18 @@ jobs:
         uses: actions/github-script@v6
         with:
           script: |
-            console.log(github)
-            const input = {
-              branch: 'main',
-              delay: 2,
-              cancelOnNewerWorkflow: true,
-            }
-            const wait = require('./.github/workflows/wait.ts');
-            await wait(github, context, input);
+            console.log(context.runId);
+            const { owner, repo } = context.repo;
+            const cancelOptions = {
+              owner,
+              repo,
+              run_id: context.runId,
+            };
+
+            await github.request(
+              github.rest.actions.cancelWorkflowRun,
+              cancelOptions,
+            );
 
       # - name: cancel via cli
       #   env:
