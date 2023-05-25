@@ -21,5 +21,5 @@ runs:
       uses: actions/github-script@v6
       with:
         script: |
-          const wait = require('${{ github.action_path }}/.github/actions/wait-for-workflow/wait.ts');
+          const wait = require('${{ github.action_path }}/wait.ts');
           await wait(core, github, context);
