@@ -54,7 +54,9 @@ const getRuns = async (github, context, input) => {
   throw lastError;
 };
 
-const pollWorkflows = async (github, context, input) => {
+const wait = async (github, context, input) => {
+  console.log('Checking for running builds...');
+
   const workflowName = context.workflow;
 
   while (true) {
@@ -73,12 +75,14 @@ const pollWorkflows = async (github, context, input) => {
         run_id: context.runId,
       };
 
-      await github.request(
-        github.rest.actions.cancelWorkflowRun,
-        cancelOptions,
-      )
+      try {
+        await github.request(
+          github.rest.actions.cancelWorkflowRun,
+          cancelOptions,
+        )
 
-      throw new Error("cancel")
+        return
+      } catch {}
     }
 
     const previousRuns = runs
@@ -86,7 +90,7 @@ const pollWorkflows = async (github, context, input) => {
       .sort((a, b) => b.id - a.id);
 
     if (!previousRuns.length) {
-      // No other runs
+      console.log('No other builds in progress. Continuing...');
       break;
     }
 
@@ -98,14 +102,6 @@ const pollWorkflows = async (github, context, input) => {
     // Wait 30 seconds before checking again
     await delay(input.delay * 1000);
   }
-};
-
-const wait = async (github, context, input) => {
-  console.log('Checking for running builds...');
-
-  await pollWorkflows(github, context, input);
-
-  console.log('No other builds in progress. Continuing...');
 };
 
 module.exports = wait;
