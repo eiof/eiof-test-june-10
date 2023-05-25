@@ -78,7 +78,7 @@ const pollWorkflows = async (github, context, input) => {
         cancelOptions,
       )
 
-      return
+      throw new Error("cancel")
     }
 
     const previousRuns = runs
