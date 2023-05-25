@@ -34,19 +34,25 @@ jobs:
             const wait = require('./.github/workflows/wait.ts');
             await wait(github, context, input);
 
-      - name: cancel via cli
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          RUN_IDS=($(gh api \
-            -H "Accept: application/vnd.github+json" \
-            -H "X-GitHub-Api-Version: 2022-11-28" \
-            /repos/${{ github.repository }}/actions/workflows/main.yml/runs \
-            | jq -r '.workflow_runs[] | select(.status == "in_progress" or .status == "pending").id'))
-          for id in "${RUN_IDS[@]}"; do
-            echo "Canceling release worflow run $id"
-            gh run cancel $id --repo ${{ github.repository }}
-          done
+      # - name: cancel via cli
+      #   env:
+      #     GH_TOKEN: ${{ github.token }}
+      #   run: |
+      #     IN_PROGRESS=($(gh api \
+      #       -H "Accept: application/vnd.github+json" \
+      #       -H "X-GitHub-Api-Version: 2022-11-28" \
+      #       /repos/${{ github.repository }}/actions/workflows/main.yml/runs\?=main&status=in_progress \
+      #       | jq -r '.workflow_runs[].id))
+      #     QUEUED=($(gh api \
+      #       -H "Accept: application/vnd.github+json" \
+      #       -H "X-GitHub-Api-Version: 2022-11-28" \
+      #       /repos/${{ github.repository }}/actions/workflows/main.yml/runs\?=main&status=queued \
+      #       | jq -r '.workflow_runs[].id))
+      #     if []
+      #     then
+      #       echo "Canceling self"
+      #       gh run cancel ${{ github.run_id	}} --repo ${{ github.repository }}
+      #     fi
 
       - name: stall 1
         run: |

@@ -75,7 +75,7 @@ const wait = async (github, context, input) => {
         run_id: context.runId,
       };
 
-      return await github.request(
+      return github.request(
         github.rest.actions.cancelWorkflowRun,
         cancelOptions,
       )
