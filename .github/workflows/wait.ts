@@ -69,16 +69,16 @@ const wait = async (github, context, input) => {
       console.log('Canceling this workflow, a newer workflow has started.');
 
       const { owner, repo } = context.repo;
-      const cancelOptions = {
+      await github.rest.actions.cancelWorkflowRun({
         owner,
         repo,
         run_id: context.runId,
-      };
+      });
 
-      return await github.request(
-        github.rest.actions.cancelWorkflowRun,
-        cancelOptions,
-      )
+      // Wait up to two minutes for cancelation
+      // or fall through loop and try again
+      await delay(120 * 100)
+      continue;
     }
 
     const previousRuns = runs

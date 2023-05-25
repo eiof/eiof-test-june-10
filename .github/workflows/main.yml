@@ -25,37 +25,13 @@ jobs:
         uses: actions/github-script@v6
         with:
           script: |
-            console.log(context.runId);
-            const { owner, repo } = context.repo;
-            const cancelOptions = {
-              owner,
-              repo,
-              run_id: context.runId,
-            };
-
-            await github.rest.actions.cancelWorkflowRun(cancelOptions);
-
-      # - name: cancel via cli
-      #   env:
-      #     GH_TOKEN: ${{ github.token }}
-      #   run: |
-      #     IN_PROGRESS=($(gh api \
-      #       -H "Accept: application/vnd.github+json" \
-      #       -H "X-GitHub-Api-Version: 2022-11-28" \
-      #       /repos/${{ github.repository }}/actions/workflows/main.yml/runs\?=main&status=in_progress \
-      #       | jq -r '.workflow_runs[].id))
-
-      #     QUEUED=($(gh api \
-      #       -H "Accept: application/vnd.github+json" \
-      #       -H "X-GitHub-Api-Version: 2022-11-28" \
-      #       /repos/${{ github.repository }}/actions/workflows/main.yml/runs\?=main&status=queued \
-      #       | jq -r '.workflow_runs[].id))
-
-      #     if []
-      #     then
-      #       echo "Canceling self"
-      #       gh run cancel ${{ github.run_id	}} --repo ${{ github.repository }}
-      #     fi
+            const input = {
+              branch: 'main',
+              delay: 2,
+              cancelOnNewerWorkflow: true,
+            }
+            const wait = require('./.github/workflows/wait.ts');
+            await wait(github, context, input);
 
       - name: stall 1
         run: |
