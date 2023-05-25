@@ -17,3 +17,9 @@ jobs:
       - name: say hi
         run: |
           echo "hello world"
+    
+      - name: Test wait for deploys
+        uses: actions/github-script@v6
+        with:
+          script: |
+            console.log(context)
