@@ -111,4 +111,4 @@ const wait = async (github, context, input) => {
   console.log('No other builds in progress. Continuing...');
 };
 
-export default wait;
+module.exports = wait;
