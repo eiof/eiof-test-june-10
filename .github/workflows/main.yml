@@ -22,7 +22,7 @@ jobs:
           echo "hello world"
     
       - name: wait for older workflows to conclude
-        uses: .github/actions/wait-for-workflow
+        uses: ./.github/actions/wait-for-workflow
         with:
           branch: main
           delay: 15
