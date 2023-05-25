@@ -4,24 +4,12 @@
 
 const delay = async (ms) => await new Promise((resolve) => setTimeout(resolve, ms));
 
-const getWorkflows = async (github, context) => {
+const getRuns = async (github, context, input) => {
   const { owner, repo } = context.repo;
 
   const options = {
     owner,
     repo,
-  };
-
-  return github.paginate(github.rest.actions.listRepoWorkflows, options);
-};
-
-const getRuns = async (github, context, input, workflow_id) => {
-  const { owner, repo } = context.repo;
-
-  const options = {
-    owner,
-    repo,
-    workflow_id,
     branch: input.branch,
   };
 
@@ -36,12 +24,12 @@ const getRuns = async (github, context, input, workflow_id) => {
   };
 
   const inProgressRunsPromise = github.paginate(
-    github.rest.actions.listWorkflowRuns,
+    github.rest.actions.listWorkflowRunsForRepo,
     inProgressOptions,
   );
 
   const queuedRunsPromise = github.paginate(
-    github.rest.actions.listWorkflowRuns,
+    github.rest.actions.listWorkflowRunsForRepo,
     queuedOptions,
   );
 
@@ -66,12 +54,14 @@ const getRuns = async (github, context, input, workflow_id) => {
   throw lastError;
 };
 
-const pollWorkflows = async (github, context, input, workflow_id) => {
+const pollWorkflows = async (github, context, input) => {
+  const workflowName = context.workflow;
+
   while (true) {
-    const runs = await getRuns(github, context, input, workflow_id);
+    const runs = await getRuns(github, context, input);
 
     const newerRuns = runs
-      .filter((run) => run.id > context.id);
+      .filter((run) => run.name === workflowName && run.id > context.id);
 
     if (newerRuns.length) {
       const { owner, repo } = context.repo;
@@ -80,6 +70,8 @@ const pollWorkflows = async (github, context, input, workflow_id) => {
         repo,
         run_id: context.id,
       };
+
+      console.log('Canceling workflow run, newer build has started.');
 
       await github.request(
         github.rest.actions.cancelWorkflowRun,
@@ -93,7 +85,7 @@ const pollWorkflows = async (github, context, input, workflow_id) => {
     }
 
     const previousRuns = runs
-      .filter((run) => run.id < context.runId)
+      .filter((run) => run.name === workflowName && run.id < context.runId)
       .sort((a, b) => b.id - a.id);
 
     if (!previousRuns.length) {
@@ -114,14 +106,7 @@ const pollWorkflows = async (github, context, input, workflow_id) => {
 const wait = async (github, context, input) => {
   console.log('Checking for running builds...');
 
-  const workflows = await getWorkflows(github, context);
-  const current_workflow = workflows.find(
-    (workflow) => workflow.name === context.workflow,
-  );
-
-  if (current_workflow && current_workflow.id) {
-    await pollWorkflows(github, context, input, current_workflow.id);
-  }
+  await pollWorkflows(github, context, input);
 
   console.log('No other builds in progress. Continuing...');
 };

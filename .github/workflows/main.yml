@@ -22,4 +22,14 @@ jobs:
         uses: actions/github-script@v6
         with:
           script: |
-            console.log(context.payload)
+            const input = {
+              branch: 'main',
+              delay: 2,
+              cancelOnNewerWorkflow: true,
+            }
+            const wait = require('./wait.ts');
+            await wait(github, context, input);
+
+      - name: stall
+        run: |
+          sleep 20
