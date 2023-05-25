@@ -25,7 +25,7 @@ jobs:
         uses: actions/github-script@v6
         with:
           script: |
-            console.log(context)
+            console.log(github)
             const input = {
               branch: 'main',
               delay: 2,
@@ -43,11 +43,13 @@ jobs:
       #       -H "X-GitHub-Api-Version: 2022-11-28" \
       #       /repos/${{ github.repository }}/actions/workflows/main.yml/runs\?=main&status=in_progress \
       #       | jq -r '.workflow_runs[].id))
+
       #     QUEUED=($(gh api \
       #       -H "Accept: application/vnd.github+json" \
       #       -H "X-GitHub-Api-Version: 2022-11-28" \
       #       /repos/${{ github.repository }}/actions/workflows/main.yml/runs\?=main&status=queued \
       #       | jq -r '.workflow_runs[].id))
+
       #     if []
       #     then
       #       echo "Canceling self"
