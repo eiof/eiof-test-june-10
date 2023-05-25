@@ -75,14 +75,10 @@ const wait = async (github, context, input) => {
         run_id: context.runId,
       };
 
-      try {
-        await github.request(
-          github.rest.actions.cancelWorkflowRun,
-          cancelOptions,
-        )
-
-        return
-      } catch {}
+      return await github.request(
+        github.rest.actions.cancelWorkflowRun,
+        cancelOptions,
+      )
     }
 
     const previousRuns = runs
