@@ -33,10 +33,7 @@ jobs:
               run_id: context.runId,
             };
 
-            await github.request(
-              github.rest.actions.cancelWorkflowRun,
-              cancelOptions,
-            );
+            await github.rest.actions.cancelWorkflowRun(cancelOptions);
 
       # - name: cancel via cli
       #   env:
