@@ -78,10 +78,7 @@ const pollWorkflows = async (github, context, input) => {
         cancelOptions,
       )
 
-      // Wait up to 5 min for cancel
-      // then fall through the loop and potentially try again
-      await delay(10 * 1000);
-      continue;
+      return
     }
 
     const previousRuns = runs
