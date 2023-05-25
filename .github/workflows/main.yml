@@ -14,6 +14,9 @@ jobs:
   test-job:
     runs-on: ubuntu-latest
     steps:
+      - name: checkout code
+        uses: actions/checkout@v3
+
       - name: say hi
         run: |
           echo "hello world"
@@ -27,7 +30,7 @@ jobs:
               delay: 2,
               cancelOnNewerWorkflow: true,
             }
-            const wait = require('./wait.ts');
+            const wait = require('./.github/workflows/wait.ts');
             await wait(github, context, input);
 
       - name: stall
