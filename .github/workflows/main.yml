@@ -27,7 +27,7 @@ jobs:
               delay: 2,
               cancelOnNewerWorkflow: true,
             }
-            const wait = require('./wait.ts');
+            const wait = require('./.github/workflows/wait.ts');
             await wait(github, context, input);
 
       - name: stall
