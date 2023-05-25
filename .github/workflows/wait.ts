@@ -64,6 +64,8 @@ const pollWorkflows = async (github, context, input) => {
       .filter((run) => run.name === workflowName && run.id > context.runId);
 
     if (newerRuns.length) {
+      console.log('Canceling workflow run, newer build has started.');
+
       const { owner, repo } = context.repo;
       const cancelOptions = {
         owner,
@@ -71,16 +73,14 @@ const pollWorkflows = async (github, context, input) => {
         run_id: context.id,
       };
 
-      console.log('Canceling workflow run, newer build has started.');
-
       await github.request(
         github.rest.actions.cancelWorkflowRun,
         cancelOptions,
       )
 
-      // Wait up to 5 min for cancel
-      // otherwise fall through the loop and try again
-      await delay(300 * 1000);
+      // Wait up to 10 sec for cancel
+      // then fall through the loop and potentially try again
+      await delay(10 * 1000);
       continue;
     }
 
