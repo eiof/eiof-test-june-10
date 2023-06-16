@@ -17,8 +17,7 @@ jobs:
     steps:
       - name: test job
         run: |
-          echo "hello world"
-          sleep 10
+          echo ${{ github.event.workflow_run.id }}
 
   sequential-job:
     if: ${{ github.event.workflow_run.conclusion == 'success' }}
