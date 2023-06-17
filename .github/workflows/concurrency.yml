@@ -13,17 +13,31 @@ concurrency:
 
 jobs:
   test-job:
-    runs-on: ubuntu-latest
-    steps:
-      - name: test job
-        run: |
-          echo ${{ github.event.workflow_run.id }}
-          sleep 10
-
-  sequential-job:
+    name: validate workflow run order
     if: ${{ github.event.workflow_run.conclusion == 'success' }}
     runs-on: ubuntu-latest
     steps:
-      - name: test job 2
+      - name: validate worflow_run order
         run: |
-          echo "hello world again"
+          list_workflow_runs_url=${{ github.event.workflow_run.repository.url }}/actions/workflows/${{ github.event.workflow_run.workflow_id }}/runs
+          response=$(curl -L \
+            -H "Accept: application/vnd.github+json" \
+            -H "Authorization: Bearer ${{ secrets.FA_ASSISTANT_PAT_TOKEN }} " \
+            -H "X-GitHub-Api-Version: 2022-11-28" \
+            ${list_workflow_runs_url}\?branch=${{ github.event.workflow_run.head_branch }}\&status=success \
+          latest_workflow_run=$(echo -E "$response" | jq '[.workflow_runs[].id] | .[0]')
+          if [[ "$latest_workflow_run" > ${{ github.event.workflow_run.id }} ]]; then
+            echo "This was triggered by ${{ github.event.workflow_run.id }}."
+            echo "The latest successful run is $latest_workflow_run."
+            echo "Since this workflow's triggering run is not the latest run, it will now exit to guarantee order..."
+            exit 1
+          fi
+
+  sequential-job:
+    runs-on: ubuntu-latest
+    needs:
+      - test-job
+    steps:
+      - name: hello world
+        run: |
+          echo "hello world!"

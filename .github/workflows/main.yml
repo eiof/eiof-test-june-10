@@ -20,8 +20,6 @@ jobs:
       - name: say hi
         run: |
           echo "Time for random sleep"
-          date -u "+%Y/%m/%dT%H:%M:%S%z"
-          date --date yesterday -u "+%Y/%m/%dT%H:%M:%S%z"
           sleep $(shuf -i 5-20 -n 1)
     
       # - name: wait for older workflows to conclude
