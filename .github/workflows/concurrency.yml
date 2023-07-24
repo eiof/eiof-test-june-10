@@ -34,6 +34,15 @@ jobs:
             exit 1
           fi
 
+  print-stuff:
+    runs-on: ubuntu-latest
+    needs:
+      - test-job
+    steps:
+      - name: what is
+        run: |
+          $(jq -r '.' "$GITHUB_EVENT_PATH")
+
   sequential-job:
     runs-on: ubuntu-latest
     needs:
