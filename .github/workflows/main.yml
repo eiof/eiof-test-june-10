@@ -19,7 +19,7 @@ jobs:
 
       - name: what is
         run: |
-          $(jq -r '.' "$GITHUB_EVENT_PATH")
+          jq -r '.' "$GITHUB_EVENT_PATH"
 
       - name: say hi
         run: |
